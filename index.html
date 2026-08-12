@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>SchoolWorksPro Support</title>
+
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6fb;
+      color: #1f2937;
+    }
+
+    .header {
+      background: white;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 18px 30px;
+    }
+
+    .brand {
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      background: #4f46e5;
+      color: white;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .brand h1 {
+      font-size: 21px;
+    }
+
+    .brand p {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 3px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 35px 20px;
+    }
+
+    .title {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .title h2 {
+      font-size: 30px;
+      margin-bottom: 8px;
+    }
+
+    .title p {
+      color: #6b7280;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+    }
+
+    .card h3 {
+      margin-bottom: 20px;
+      font-size: 19px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 130px;
+      resize: vertical;
+    }
+
+    .attachment-section {
+      margin-bottom: 16px;
+    }
+
+    .attachment-input {
+      width: 100%;
+      border: 2px dashed #d1d5db;
+      border-radius: 10px;
+      padding: 14px;
+      background: #f9fafb;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+
+    .attachment-input:hover {
+      border-color: #4f46e5;
+      background: #f5f3ff;
+    }
+
+    .attachment-help {
+      display: block;
+      color: #6b7280;
+      font-size: 12px;
+      font-weight: normal;
+      margin-top: -2px;
+      margin-bottom: 8px;
+    }
+
+    .attachment-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .attachment-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 9px 10px;
+      font-size: 13px;
+    }
+
+    .attachment-item span {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .attachment-remove {
+      background: transparent;
+      color: #dc2626;
+      padding: 4px 7px;
+      font-size: 13px;
+    }
+
+    .attachment-remove:hover {
+      background: #fee2e2;
+    }
+
+    .upload-progress {
+      display: none;
+      color: #6b7280;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+    }
+
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 12px 18px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .primary {
+      background: #4f46e5;
+      color: white;
+      width: 100%;
+    }
+
+    .primary:hover {
+      background: #4338ca;
+    }
+
+    .primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .success {
+      display: none;
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      color: #166534;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    .success strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .ticket-result {
+      display: none;
+    }
+
+    .ticket-number {
+      background: #eef2ff;
+      color: #4338ca;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .ticket-number strong {
+      display: block;
+      font-size: 22px;
+      margin-top: 5px;
+    }
+
+    .status-box {
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      background: #f9fafb;
+    }
+
+    .status-label {
+      color: #6b7280;
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .status {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .open {
+      color: #dc2626;
+    }
+
+    .progress {
+      color: #d97706;
+    }
+
+    .resolved {
+      color: #16a34a;
+    }
+
+    .closed {
+      color: #6b7280;
+    }
+
+    .response {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      padding: 18px;
+      margin-top: 15px;
+    }
+
+    .response h4 {
+      color: #1d4ed8;
+      margin-bottom: 8px;
+    }
+
+    .response p {
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .attachment-results {
+      display: grid;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .attachment-preview {
+      border: 1px solid #dbeafe;
+      border-radius: 10px;
+      padding: 10px;
+      background: white;
+    }
+
+    .attachment-preview img,
+    .attachment-preview video {
+      display: block;
+      width: 100%;
+      max-height: 320px;
+      object-fit: contain;
+      border-radius: 8px;
+      background: #111827;
+      margin-bottom: 8px;
+    }
+
+    .attachment-link {
+      color: #2563eb;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      word-break: break-word;
+    }
+
+    .attachment-link:hover {
+      text-decoration: underline;
+    }
+
+    .details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .detail {
+      background: #f9fafb;
+      padding: 12px;
+      border-radius: 8px;
+    }
+
+    .detail small {
+      display: block;
+      color: #6b7280;
+      margin-bottom: 5px;
+    }
+
+    .detail strong {
+      word-break: break-word;
+    }
+
+    .message {
+      text-align: center;
+      color: #6b7280;
+      padding: 30px 10px;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      color: #6b7280;
+      margin-top: 15px;
+    }
+
+    @media(max-width: 800px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .details {
+        grid-template-columns: 1fr;
+      }
+
+      .container {
+        padding: 25px 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="brand">
+    <div class="logo">SW</div>
+
+    <div>
+      <h1>SchoolWorksPro</h1>
+      <p>Support Center</p>
+    </div>
+  </div>
+</header>
+
+
+<main class="container">
+
+  <div class="title">
+    <h2>SchoolWorksPro Support</h2>
+    <p>Raise a support ticket or track an existing ticket.</p>
+  </div>
+
+
+  <div class="grid">
+
+    <!-- =========================
+         RAISE TICKET
+    ========================== -->
+
+    <div class="card">
+
+      <h3>Raise a Support Ticket</h3>
+
+      <div id="successMessage" class="success">
+        <strong>Ticket Created Successfully!</strong>
+
+        Your ticket number is:
+
+        <strong id="createdTicketNumber"></strong>
+
+        Please save this ticket number to track your request.
+      </div>
+
+
+      <form id="ticketForm">
+
+        <label>Name</label>
+
+        <input
+          type="text"
+          id="name"
+          required
+          placeholder="Enter your name"
+        >
+
+
+        <label>Role</label>
+
+        <input
+          type="text"
+          id="role"
+          required
+          placeholder="Teacher / Student / Admin / Staff"
+        >
+
+
+        <label>School</label>
+
+        <input
+          type="text"
+          id="school"
+          required
+          placeholder="Enter school name"
+        >
+
+
+        <label>Category</label>
+
+        <select id="category" required>
+
+          <option value="">
+            Select Category
+          </option>
+
+          <option value="Login Issue">
+            Login Issue
+          </option>
+
+          <option value="Content Issue">
+            Content Issue
+          </option>
+
+          <option value="LMS Issue">
+            LMS Issue
+          </option>
+
+          <option value="Quiz Issue">
+            Quiz Issue
+          </option>
+
+          <option value="Technical Issue">
+            Technical Issue
+          </option>
+
+          <option value="Other">
+            Other
+          </option>
+
+        </select>
+
+
+        <label>Priority</label>
+
+        <select id="priority" required>
+
+          <option value="Low">
+            Low
+          </option>
+
+          <option value="Medium" selected>
+            Medium
+          </option>
+
+          <option value="High">
+            High
+          </option>
+
+          <option value="Urgent">
+            Urgent
+          </option>
+
+        </select>
+
+
+        <label>Subject</label>
+
+        <input
+          type="text"
+          id="subject"
+          required
+          placeholder="Briefly describe the issue"
+        >
+
+
+        <label>Description</label>
+
+        <textarea
+          id="description"
+          required
+          placeholder="Explain the issue in detail..."
+        ></textarea>
+
+        <div class="attachment-section">
+          <label for="attachments">Attach Photo / Video <span style="font-weight:normal;color:#6b7280;">(Optional)</span></label>
+          <input
+            type="file"
+            id="attachments"
+            class="attachment-input"
+            accept="image/*,video/*"
+            multiple
+          >
+          <small class="attachment-help">
+            You can attach photos or videos of the issue. Images up to 10 MB, videos up to 100 MB. Maximum 150 MB total per ticket.
+          </small>
+          <div id="attachmentList" class="attachment-list"></div>
+          <div id="uploadProgress" class="upload-progress">Uploading attachments...</div>
+        </div>
+
+
+
+        <button
+          type="submit"
+          id="submitButton"
+          class="primary"
+        >
+          Submit Ticket
+        </button>
+
+      </form>
+
+      <div id="submitLoading" class="loading">
+        Creating ticket...
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         TRACK TICKET
+    ========================== -->
+
+    <div class="card">
+
+      <h3>Track Your Ticket</h3>
+
+      <p style="
+        color:#6b7280;
+        font-size:14px;
+        margin-bottom:20px;
+      ">
+        Enter your ticket number to see the latest status
+        and response from the SchoolWorksPro support team.
+      </p>
+
+
+      <label>Ticket Number</label>
+
+      <input
+        type="text"
+        id="trackTicketNumber"
+        placeholder="Example: SWP-0001"
+      >
+
+
+      <button
+        id="trackButton"
+        class="primary"
+        onclick="trackTicket()"
+      >
+        Track Ticket
+      </button>
+
+
+      <div
+        id="trackLoading"
+        class="loading"
+      >
+        Finding ticket...
+      </div>
+
+
+      <div
+        id="ticketResult"
+        class="ticket-result"
+      >
+
+        <div class="ticket-number">
+
+          Ticket Number
+
+          <strong id="resultTicketNumber">
+          </strong>
+
+        </div>
+
+
+        <div class="status-box">
+
+          <div class="status-label">
+            Current Status
+          </div>
+
+          <div
+            id="resultStatus"
+            class="status"
+          >
+          </div>
+
+        </div>
+
+
+        <div class="details">
+
+          <div class="detail">
+
+            <small>School</small>
+
+            <strong id="resultSchool">
+            </strong>
+
+          </div>
+
+
+          <div class="detail">
+
+            <small>Category</small>
+
+            <strong id="resultCategory">
+            </strong>
+
+          </div>
+
+
+          <div class="detail">
+
+            <small>Priority</small>
+
+            <strong id="resultPriority">
+            </strong>
+
+          </div>
+
+
+          <div class="detail">
+
+            <small>Created</small>
+
+            <strong id="resultCreated">
+            </strong>
+
+          </div>
+
+
+          <div
+            class="detail"
+            style="grid-column:1/-1;"
+          >
+
+            <small>Subject</small>
+
+            <strong id="resultSubject">
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="clientResponse"
+          class="response"
+          style="display:none;"
+        >
+
+          <h4>
+            💬 Response from SchoolWorksPro
+          </h4>
+
+          <p id="responseText">
+          </p>
+
+        </div>
+
+      </div>
+
+      <div
+        id="resultAttachments"
+        class="response"
+        style="display:none;"
+      >
+        <h4>📎 Attachments</h4>
+        <div id="resultAttachmentsList"></div>
+      </div>
+
+
+      <div
+        id="notFound"
+        class="message"
+        style="display:none;"
+      >
+        No ticket found with this ticket number.
+      </div>
+
+    </div>
+
+  </div>
+
+</main>
+
+
+<script>
+
+  /* =====================================================
+     FIREBASE CONFIG
+  ====================================================== */
+
+  const firebaseConfig = {
+
+    apiKey:
+      "AIzaSyC35OAfNgFm4fsg-g4wSNHW9kg8f5Q34MY",
+
+    authDomain:
+      "schoolworkspro-bb371.firebaseapp.com",
+
+    projectId:
+      "schoolworkspro-bb371",
+
+    storageBucket:
+      "schoolworkspro-bb371.firebasestorage.app",
+
+    messagingSenderId:
+      "501717012633",
+
+    appId:
+      "1:501717012633:web:a877490633f9a3b5e2e808",
+
+    measurementId:
+      "G-ZQT318ZKQG"
+
+  };
+
+
+  firebase.initializeApp(firebaseConfig);
+
+  const db = firebase.firestore();
+
+
+  /* =====================================================
+     GLOBAL VARIABLES
+  ====================================================== */
+
+  let unsubscribeTicket = null;
+
+
+
+  /* =====================================================
+     ATTACHMENTS — CLOUDINARY
+  ====================================================== */
+
+  const CLOUDINARY_CLOUD_NAME = "mwlo9yak";
+  const CLOUDINARY_UPLOAD_PRESET = "schoolworkspro_production";
+  const CLOUDINARY_UPLOAD_URL =
+    "https://api.cloudinary.com/v1_1/" +
+    CLOUDINARY_CLOUD_NAME +
+    "/auto/upload";
+
+  const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
+  const MAX_VIDEO_SIZE = 100 * 1024 * 1024;
+  const MAX_TOTAL_ATTACHMENT_SIZE = 150 * 1024 * 1024;
+
+  let selectedAttachments = [];
+
+  document
+    .getElementById("attachments")
+    .addEventListener("change", function(event) {
+      const files = Array.from(event.target.files || []);
+
+      files.forEach(function(file) {
+        const isImage = file.type.startsWith("image/");
+        const isVideo = file.type.startsWith("video/");
+
+        if (!isImage && !isVideo) {
+          alert(file.name + " is not a supported photo/video file.");
+          return;
+        }
+
+        if (isImage && file.size > MAX_IMAGE_SIZE) {
+          alert(file.name + " is larger than 10 MB. Images must be 10 MB or smaller.");
+          return;
+        }
+
+        if (isVideo && file.size > MAX_VIDEO_SIZE) {
+          alert(file.name + " is larger than 100 MB. Videos must be 100 MB or smaller.");
+          return;
+        }
+
+        const alreadySelected = selectedAttachments.some(function(existingFile) {
+          return (
+            existingFile.name === file.name &&
+            existingFile.size === file.size &&
+            existingFile.lastModified === file.lastModified
+          );
+        });
+
+        if (alreadySelected) return;
+
+        const currentTotal = selectedAttachments.reduce(function(total, item) {
+          return total + item.size;
+        }, 0);
+
+        if (currentTotal + file.size > MAX_TOTAL_ATTACHMENT_SIZE) {
+          alert("All attachments together must be 150 MB or less per ticket.");
+          return;
+        }
+
+        selectedAttachments.push(file);
+      });
+
+      event.target.value = "";
+      renderAttachmentList();
+    });
+
+  function removeAttachment(index) {
+    selectedAttachments.splice(index, 1);
+    renderAttachmentList();
+  }
+
+  function renderAttachmentList() {
+    const list = document.getElementById("attachmentList");
+    list.innerHTML = "";
+
+    selectedAttachments.forEach(function(file, index) {
+      const item = document.createElement("div");
+      item.className = "attachment-item";
+
+      const icon = document.createElement("strong");
+      icon.textContent = file.type.startsWith("video/") ? "🎥" : "📷";
+
+      const name = document.createElement("span");
+      name.textContent = file.name;
+
+      const removeButton = document.createElement("button");
+      removeButton.type = "button";
+      removeButton.className = "attachment-remove";
+      removeButton.textContent = "Remove";
+      removeButton.addEventListener("click", function() {
+        removeAttachment(index);
+      });
+
+      item.appendChild(icon);
+      item.appendChild(name);
+      item.appendChild(removeButton);
+      list.appendChild(item);
+    });
+  }
+
+  async function uploadAttachments(ticketNumber) {
+    const uploadedFiles = [];
+    const progress = document.getElementById("uploadProgress");
+
+    if (!selectedAttachments.length) {
+      return uploadedFiles;
+    }
+
+    progress.style.display = "block";
+
+    try {
+      for (let i = 0; i < selectedAttachments.length; i++) {
+        const file = selectedAttachments[i];
+
+        progress.textContent =
+          "Uploading attachment " +
+          (i + 1) +
+          " of " +
+          selectedAttachments.length +
+          "...";
+
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+        formData.append("folder", "schoolworkspro/" + ticketNumber);
+
+        const response = await fetch(CLOUDINARY_UPLOAD_URL, {
+          method: "POST",
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.secure_url) {
+          throw new Error(
+            result.error?.message || "Cloudinary upload failed."
+          );
+        }
+
+        uploadedFiles.push({
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          url: result.secure_url,
+          publicId: result.public_id || "",
+          resourceType: result.resource_type || ""
+        });
+      }
+
+      return uploadedFiles;
+    } finally {
+      progress.style.display = "none";
+    }
+  }
+
+  /* =====================================================
+     CREATE TICKET
+  ====================================================== */
+
+  document
+    .getElementById("ticketForm")
+    .addEventListener("submit", async function(event) {
+
+      event.preventDefault();
+
+
+      const submitButton =
+        document.getElementById("submitButton");
+
+      const loading =
+        document.getElementById("submitLoading");
+
+
+      submitButton.disabled = true;
+
+      submitButton.textContent =
+        "Submitting...";
+
+      loading.style.display =
+        "block";
+
+
+      try {
+
+        /*
+          Generate ticket number.
+          Example:
+          SWP-1723284123456
+        */
+
+        const ticketNumber =
+          "SWP-" +
+          Date.now();
+
+
+        const ticketData = {
+
+          ticketNumber:
+
+            ticketNumber,
+
+          name:
+
+            document
+              .getElementById("name")
+              .value
+              .trim(),
+
+          role:
+
+            document
+              .getElementById("role")
+              .value
+              .trim(),
+
+          school:
+
+            document
+              .getElementById("school")
+              .value
+              .trim(),
+
+          category:
+
+            document
+              .getElementById("category")
+              .value,
+
+          priority:
+
+            document
+              .getElementById("priority")
+              .value,
+
+          subject:
+
+            document
+              .getElementById("subject")
+              .value
+              .trim(),
+
+          description:
+
+            document
+              .getElementById("description")
+              .value
+              .trim(),
+
+          status:
+
+            "Open",
+
+          /*
+            This is the important new field.
+          */
+
+          clientResponse:
+
+            "",
+
+          notes:
+
+            [],
+
+          createdAt:
+
+            firebase.firestore
+              .FieldValue
+              .serverTimestamp(),
+
+          updatedAt:
+
+            firebase.firestore
+              .FieldValue
+              .serverTimestamp(),
+
+          attachments: []
+        };
+
+
+        /*
+          Upload optional photos/videos to Cloudinary first, then
+          save their secure URLs inside the ticket document.
+        */
+        ticketData.attachments = await uploadAttachments(ticketNumber);
+
+
+        const ticketRef = await db
+          .collection("tickets")
+          .add(ticketData);
+
+        // Create a persistent admin notification in Firestore.
+        // This is intentionally written by the client after the ticket
+        // is successfully created, so the notification still exists
+        // even when the admin dashboard is closed.
+        try {
+          await db
+            .collection("notifications")
+            .add({
+              type: "new_ticket",
+              title: "New Support Ticket Registered",
+              message: ticketNumber +
+                " has been registered by " +
+                ticketData.name +
+                " from " +
+                ticketData.school +
+                ".",
+              ticketId: ticketRef.id,
+              ticketNumber: ticketNumber,
+              priority: ticketData.priority || "Medium",
+              recipientUid: "ALL_ADMINS",
+              read: false,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              source: "support-ticket",
+              organization: "Digischool Global",
+              department: "Technical Team"
+            });
+        } catch (notificationError) {
+          // The ticket is already saved. Do not make ticket creation fail
+          // just because notification rules are not configured yet.
+          console.error("Admin notification creation failed:", notificationError);
+        }
+
+
+        document
+          .getElementById("createdTicketNumber")
+          .textContent =
+          ticketNumber;
+
+
+        document
+          .getElementById("successMessage")
+          .style.display =
+          "block";
+
+
+        document
+          .getElementById("ticketForm")
+          .reset();
+
+        selectedAttachments = [];
+        renderAttachmentList();
+
+
+        /*
+          Automatically put the ticket
+          number into the tracking box.
+        */
+
+        document
+          .getElementById("trackTicketNumber")
+          .value =
+          ticketNumber;
+
+
+        /*
+          Automatically start tracking.
+        */
+
+        startLiveTracking(ticketNumber);
+
+
+      } catch (error) {
+
+        console.error(
+          "Ticket creation error:",
+          error
+        );
+
+        alert(
+          "Unable to create ticket. Please try again."
+        );
+
+      } finally {
+
+        submitButton.disabled =
+          false;
+
+        submitButton.textContent =
+          "Submit Ticket";
+
+        loading.style.display =
+          "none";
+
+      }
+
+    });
+
+
+  /* =====================================================
+     TRACK TICKET
+  ====================================================== */
+
+  function trackTicket() {
+
+    const ticketNumber =
+      document
+        .getElementById("trackTicketNumber")
+        .value
+        .trim();
+
+
+    if (!ticketNumber) {
+
+      alert(
+        "Please enter your ticket number."
+      );
+
+      return;
+
+    }
+
+
+    startLiveTracking(
+      ticketNumber
+    );
+
+  }
+
+
+  /* =====================================================
+     REAL-TIME TRACKING
+  ====================================================== */
+
+  function startLiveTracking(ticketNumber) {
+
+    /*
+      Stop previous listener
+      before starting another one.
+    */
+
+    if (unsubscribeTicket) {
+
+      unsubscribeTicket();
+
+      unsubscribeTicket = null;
+
+    }
+
+
+    document
+      .getElementById("trackLoading")
+      .style.display =
+      "block";
+
+
+    document
+      .getElementById("ticketResult")
+      .style.display =
+      "none";
+
+
+    document
+      .getElementById("notFound")
+      .style.display =
+      "none";
+
+
+    /*
+      Listen to Firestore in real time.
+    */
+
+    unsubscribeTicket = db
+      .collection("tickets")
+      .where(
+        "ticketNumber",
+        "==",
+        ticketNumber
+      )
+      .limit(1)
+      .onSnapshot(
+
+        function(snapshot) {
+
+          document
+            .getElementById("trackLoading")
+            .style.display =
+            "none";
+
+
+          if (snapshot.empty) {
+
+            document
+              .getElementById("ticketResult")
+              .style.display =
+              "none";
+
+
+            document
+              .getElementById("notFound")
+              .style.display =
+              "block";
+
+
+            return;
+
+          }
+
+
+          const doc =
+            snapshot.docs[0];
+
+
+          const ticket =
+            doc.data();
+
+
+          displayTicket(
+            ticket
+          );
+
+        },
+
+        function(error) {
+
+          console.error(
+            "Tracking error:",
+            error
+          );
+
+
+          document
+            .getElementById("trackLoading")
+            .style.display =
+            "none";
+
+
+          alert(
+            "Unable to track ticket."
+          );
+
+        }
+
+      );
+
+  }
+
+
+  /* =====================================================
+     DISPLAY TICKET
+  ====================================================== */
+
+  function displayTicket(ticket) {
+
+    document
+      .getElementById("ticketResult")
+      .style.display =
+      "block";
+
+
+    document
+      .getElementById("notFound")
+      .style.display =
+      "none";
+
+
+    document
+      .getElementById("resultTicketNumber")
+      .textContent =
+      ticket.ticketNumber ||
+      "Unknown";
+
+
+    document
+      .getElementById("resultSchool")
+      .textContent =
+      ticket.school ||
+      "Not provided";
+
+
+    document
+      .getElementById("resultCategory")
+      .textContent =
+      ticket.category ||
+      "Not provided";
+
+
+    document
+      .getElementById("resultPriority")
+      .textContent =
+      ticket.priority ||
+      "Not provided";
+
+
+    document
+      .getElementById("resultSubject")
+      .textContent =
+      ticket.subject ||
+      "No subject";
+
+
+    document
+      .getElementById("resultCreated")
+      .textContent =
+      formatDate(
+        ticket.createdAt
+      );
+
+
+    /*
+      Display status.
+    */
+
+    const statusElement =
+      document.getElementById(
+        "resultStatus"
+      );
+
+
+    const status =
+      ticket.status ||
+      "Open";
+
+
+    statusElement.textContent =
+      getStatusIcon(status) +
+      " " +
+      status;
+
+
+    statusElement.className =
+      "status " +
+      getStatusClass(status);
+
+
+    /*
+      Display response from admin.
+    */
+
+    const responseBox =
+      document.getElementById(
+        "clientResponse"
+      );
+
+
+    const responseText =
+      document.getElementById(
+        "responseText"
+      );
+
+
+    if (
+      ticket.clientResponse &&
+      ticket.clientResponse
+        .trim()
+    ) {
+
+      responseBox.style.display =
+        "block";
+
+
+      responseText.textContent =
+        ticket.clientResponse;
+
+    } else {
+
+      responseBox.style.display =
+        "none";
+
+    }
+
+    displayAttachments(ticket.attachments);
+
+  }
+
+
+  /* =====================================================
+     DISPLAY ATTACHMENTS
+  ====================================================== */
+
+  function displayAttachments(attachments) {
+    const box = document.getElementById("resultAttachments");
+    const list = document.getElementById("resultAttachmentsList");
+
+    if (!box || !list) return;
+    list.innerHTML = "";
+
+    if (!Array.isArray(attachments) || attachments.length === 0) {
+      box.style.display = "none";
+      return;
+    }
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "attachment-results";
+
+    attachments.forEach(function(file) {
+      if (!file || !file.url) return;
+
+      const item = document.createElement("div");
+      item.className = "attachment-preview";
+      const type = String(file.type || "").toLowerCase();
+
+      if (type.startsWith("image/")) {
+        const image = document.createElement("img");
+        image.src = file.url;
+        image.alt = file.name || "Ticket attachment";
+        image.loading = "lazy";
+        item.appendChild(image);
+      } else if (type.startsWith("video/")) {
+        const video = document.createElement("video");
+        video.src = file.url;
+        video.controls = true;
+        video.preload = "metadata";
+        item.appendChild(video);
+      }
+
+      const link = document.createElement("a");
+      link.className = "attachment-link";
+      link.href = file.url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = "Open " + (file.name || "attachment");
+      item.appendChild(link);
+      wrapper.appendChild(item);
+    });
+
+    if (!wrapper.children.length) {
+      box.style.display = "none";
+      return;
+    }
+
+    list.appendChild(wrapper);
+    box.style.display = "block";
+  }
+
+
+  /* =====================================================
+     STATUS CLASS
+  ====================================================== */
+
+  function getStatusClass(status) {
+
+    const value =
+      String(status)
+        .toLowerCase()
+        .trim();
+
+
+    if (
+      value === "in progress"
+    ) {
+
+      return "progress";
+
+    }
+
+
+    if (
+      value === "resolved"
+    ) {
+
+      return "resolved";
+
+    }
+
+
+    if (
+      value === "closed"
+    ) {
+
+      return "closed";
+
+    }
+
+
+    return "open";
+
+  }
+
+
+  /* =====================================================
+     STATUS ICON
+  ====================================================== */
+
+  function getStatusIcon(status) {
+
+    const value =
+      String(status)
+        .toLowerCase()
+        .trim();
+
+
+    if (
+      value === "resolved"
+    ) {
+
+      return "✅";
+
+    }
+
+
+    if (
+      value === "in progress"
+    ) {
+
+      return "🟡";
+
+    }
+
+
+    if (
+      value === "closed"
+    ) {
+
+      return "⚪";
+
+    }
+
+
+    return "🔴";
+
+  }
+
+
+  /* =====================================================
+     DATE
+  ====================================================== */
+
+  function formatDate(value) {
+
+    if (!value) {
+
+      return "—";
+
+    }
+
+
+    try {
+
+      let date;
+
+
+      if (
+        value &&
+        typeof value.toDate ===
+        "function"
+      ) {
+
+        date =
+          value.toDate();
+
+      } else {
+
+        date =
+          new Date(value);
+
+      }
+
+
+      if (
+        isNaN(date.getTime())
+      ) {
+
+        return "—";
+
+      }
+
+
+      return date.toLocaleString(
+        "en-IN",
+        {
+          timeZone:
+            "Asia/Kathmandu",
+
+          year: "numeric",
+
+          month: "short",
+
+          day: "numeric",
+
+          hour: "2-digit",
+
+          minute: "2-digit"
+
+        }
+      );
+
+    } catch (error) {
+
+      return "—";
+
+    }
+
+  }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SchoolWorksPro Admin Login</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f5fb;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 430px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 18px;
+            padding: 35px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.10);
+        }
+
+        .logo {
+            width: 55px;
+            height: 55px;
+            background: #3326a8;
+            color: white;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 0;
+            color: #222;
+            font-size: 25px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #777;
+            margin: 10px 0 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 9px;
+            margin-bottom: 18px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #3326a8;
+        }
+
+        button {
+            width: 100%;
+            border: none;
+            padding: 14px;
+            border-radius: 9px;
+            background: #3326a8;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #271d87;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .error {
+            display: none;
+            background: #ffe8e8;
+            color: #b42318;
+            border: 1px solid #f5b5b5;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            font-size: 14px;
+        }
+
+        .success {
+            display: none;
+            background: #e8f8ef;
+            color: #16794c;
+            border: 1px solid #a7dfc2;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            font-size: 14px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #999;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-container">
+
+    <div class="login-card">
+
+        <div class="logo">
+            SW
+        </div>
+
+        <h1>SchoolWorksPro</h1>
+
+        <div class="subtitle">
+            Admin Support Desk
+        </div>
+
+        <div id="errorMessage" class="error"></div>
+
+        <div id="successMessage" class="success">
+            Login successful. Redirecting...
+        </div>
+
+        <form id="loginForm">
+
+            <label for="email">
+                Admin Email
+            </label>
+
+            <input
+                type="email"
+                id="email"
+                placeholder="Enter admin email"
+                required
+            >
+
+            <label for="password">
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Enter password"
+                required
+            >
+
+            <button type="submit" id="loginButton">
+                Login to Admin Panel
+            </button>
+
+        </form>
+
+        <div class="footer">
+            © 2026 SchoolWorksPro
+        </div>
+
+    </div>
+
+</div>
+
+
+<script type="module">
+
+    import { initializeApp }
+        from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+
+    import {
+        getAuth,
+        signInWithEmailAndPassword,
+        onAuthStateChanged,
+        signOut
+    } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+
+    import {
+        getFirestore,
+        doc,
+        getDoc
+    } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+
+    // ==========================================
+    // FIREBASE CONFIG
+    // ==========================================
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyC35OAfNgFm4fsg-g4wSNHW9kg8f5Q34MY",
+        authDomain: "schoolworkspro-bb371.firebaseapp.com",
+        databaseURL: "https://schoolworkspro-bb371-default-rtdb.firebaseio.com",
+        projectId: "schoolworkspro-bb371",
+        storageBucket: "schoolworkspro-bb371.firebasestorage.app",
+        messagingSenderId: "501717012633",
+        appId: "1:501717012633:web:a877490633f9a3b5e2e808",
+        measurementId: "G-ZQT318ZKQG"
+    };
+
+
+    // ==========================================
+    // INITIALIZE FIREBASE
+    // ==========================================
+
+    const app = initializeApp(firebaseConfig);
+
+    const auth = getAuth(app);
+
+    const db = getFirestore(app);
+
+
+    // ==========================================
+    // ELEMENTS
+    // ==========================================
+
+    const loginForm =
+        document.getElementById("loginForm");
+
+    const loginButton =
+        document.getElementById("loginButton");
+
+    const errorMessage =
+        document.getElementById("errorMessage");
+
+    const successMessage =
+        document.getElementById("successMessage");
+
+
+    // ==========================================
+    // SHOW ERROR
+    // ==========================================
+
+    function showError(message) {
+
+        errorMessage.textContent = message;
+
+        errorMessage.style.display = "block";
+
+        successMessage.style.display = "none";
+    }
+
+
+    // ==========================================
+    // CHECK ADMIN
+    // ==========================================
+
+    async function checkAdmin(user) {
+
+        try {
+
+            const adminRef =
+                doc(db, "admins", user.uid);
+
+            const adminSnap =
+                await getDoc(adminRef);
+
+
+            if (!adminSnap.exists()) {
+
+                await signOut(auth);
+
+                showError(
+                    "Access denied. This account is not an authorized administrator."
+                );
+
+                return false;
+            }
+
+
+            const adminData =
+                adminSnap.data();
+
+
+            if (adminData.role !== "admin") {
+
+                await signOut(auth);
+
+                showError(
+                    "Access denied. You do not have administrator permission."
+                );
+
+                return false;
+            }
+
+
+            return true;
+
+        } catch (error) {
+
+            console.error(
+                "Admin verification error:",
+                error
+            );
+
+            showError(
+                "Unable to verify administrator permission."
+            );
+
+            return false;
+        }
+    }
+
+
+    // ==========================================
+    // LOGIN
+    // ==========================================
+
+    loginForm.addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+            errorMessage.style.display = "none";
+
+            loginButton.disabled = true;
+
+            loginButton.textContent = "Checking...";
+
+
+            const email =
+                document.getElementById("email").value.trim();
+
+            const password =
+                document.getElementById("password").value;
+
+
+            try {
+
+                const credential =
+                    await signInWithEmailAndPassword(
+                        auth,
+                        email,
+                        password
+                    );
+
+
+                console.log(
+                    "Logged in UID:",
+                    credential.user.uid
+                );
+
+
+                const isAdmin =
+                    await checkAdmin(credential.user);
+
+
+                if (!isAdmin) {
+
+                    loginButton.disabled = false;
+
+                    loginButton.textContent =
+                        "Login to Admin Panel";
+
+                    return;
+                }
+
+
+                successMessage.style.display =
+                    "block";
+
+                errorMessage.style.display =
+                    "none";
+
+
+                setTimeout(() => {
+
+                    window.location.href =
+                        "admin.html";
+
+                }, 700);
+
+
+            } catch (error) {
+
+                console.error(
+                    "Login error:",
+                    error
+                );
+
+
+                let message =
+                    "Unable to login.";
+
+
+                if (
+                    error.code ===
+                    "auth/invalid-credential"
+                ) {
+
+                    message =
+                        "Invalid email or password.";
+
+                } else if (
+                    error.code ===
+                    "auth/too-many-requests"
+                ) {
+
+                    message =
+                        "Too many failed attempts. Please try again later.";
+
+                } else if (
+                    error.code ===
+                    "auth/user-disabled"
+                ) {
+
+                    message =
+                        "This administrator account has been disabled.";
+
+                } else {
+
+                    message =
+                        error.message;
+                }
+
+
+                showError(message);
+
+
+                loginButton.disabled = false;
+
+                loginButton.textContent =
+                    "Login to Admin Panel";
+            }
+
+        }
+    );
+
+
+    // ==========================================
+    // CHECK EXISTING SESSION
+    // ==========================================
+
+    onAuthStateChanged(
+        auth,
+        async (user) => {
+
+            if (!user) {
+                return;
+            }
+
+
+            const isAdmin =
+                await checkAdmin(user);
+
+
+            if (isAdmin) {
+
+                window.location.href =
+                    "admin.html";
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+</html>
